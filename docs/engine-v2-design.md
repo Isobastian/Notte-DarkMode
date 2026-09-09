@@ -12,8 +12,8 @@ maintainable foundation to grow into a full accessibility toolkit.
   user-side accessibility toolkit for the low-vision community, with dark mode as the
   entry feature. Explicitly **not** a site-owner "accessibility overlay" (accessiBe /
   UserWay category — legally toxic, community-condemned, and against our mission).
-- **Open-source.** The project stays free/libre/open-source; the license is moving toward
-  **AGPL-3.0**. The repo is public.
+- **Open-source.** The project stays free/libre/open-source under **MIT**. The repo is
+  public. (An AGPL-3.0 move was considered and deferred — see §8.)
 
 ---
 
@@ -210,9 +210,10 @@ so Firefox/Safari only differ by `manifest.json`, exactly as now.
   cross-origin sheet access is most likely to bite. If a sheet is unreadable and un-
   fetchable, fall back to the old per-element pass *for that sheet only* — a narrow, rare
   fallback, not the default path.
-- **Distribution note:** the project stays open-source (AGPL), repo public. Note that
+- **Distribution note:** the project stays open-source (MIT), repo public. Note that
   Firefox AMO may require the *unminified source + build instructions* submitted privately
-  to reviewers if the uploaded build is minified — fine for FLOSS.
+  to reviewers if the uploaded build is minified — fine for FLOSS, and we ship unminified
+  anyway, so no separate source upload is needed.
 
 ## 6. Migration / rollout — deliberately incremental
 
@@ -263,9 +264,27 @@ dedicated chat by pointing it at this document.
 
 ## 8. Open-source & licensing — decided
 
-**Open-source.** The project stays FLOSS. The license is moving toward **AGPL-3.0** (still
-OSI-approved). The repo stays **public**; no private-repo split. *Confirm any license
-specifics with an IP professional; the above is orientation, not legal advice.*
+**Open-source.** The project stays FLOSS under **MIT**, and the repo stays **public**; no
+private-repo split.
+
+**The AGPL-3.0 move was considered and deferred (September 2026).** It is not a pending
+task, and nothing external requires it:
+
+- **No funder requires it.** NLnet asks only that results carry "an adequate open
+  license" / be "published under a free and open source license". MIT satisfies that
+  today. An earlier draft of the grant pack presented the AGPL relicense as an NLnet
+  requirement; it never was.
+- **It would put the App Store listing at risk.** GPL-family licences conflict with
+  Apple's device and usage restrictions — VLC was pulled from the App Store over exactly
+  this. Notte is live on iPhone, iPad, Mac and Vision, which is the whole Safari
+  distribution and the platform where a low-vision user can least easily sideload.
+- **If it is ever revisited:** relicensing is not retroactive (everything already shipped
+  stays MIT), the sole copyright holder can grant an explicit App Store exception
+  alongside the copyleft licence, and for a browser extension AGPL's network clause adds
+  almost nothing over plain GPL-3.0 while carrying the same Apple problem.
+
+*Confirm any license specifics with an IP professional; the above is orientation, not
+legal advice.*
 
 ## 9. Open questions to resolve before building
 
