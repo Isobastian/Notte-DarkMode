@@ -1807,7 +1807,7 @@
     // AND the page is actually bright — never darken text on an already-dark page).
     var lightContrast = false;
     /* ---- Notte timing log (filter console by "Notte"). Harmless; remove later. ---- */
-    var NBG = true, themeReadyAt = null;
+    var NBG = false, themeReadyAt = null;
     function nlog() {
       if (!NBG) return;
       try { var a = [].slice.call(arguments); a.unshift("[Notte +" + performance.now().toFixed(0) + "ms]"); console.log.apply(console, a); } catch (e) {}

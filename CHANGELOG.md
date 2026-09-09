@@ -9,6 +9,8 @@ Firefox and Safari.
 
 ## [Unreleased]
 
+## [2.0.1] — 2026-09-09
+
 ### Fixed
 - **iOS Safari: the tab was killed and reloaded on animation-heavy pages.**
   With Notte active, pages built on Lottie/Bodymovin SVG animations, Elementor

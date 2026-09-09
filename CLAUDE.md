@@ -20,7 +20,11 @@ iPad and Mac).
   toolkit**; dark mode is the *entry* feature, not the whole product. It is
   explicitly **not** a site-owner "accessibility overlay" (accessiBe / UserWay
   category — legally toxic, community-condemned, against the mission).
-- **License:** moving toward **AGPL-3.0** (see `LICENSE`).
+- **License:** **MIT** (see `LICENSE`). A move to AGPL-3.0 was considered and
+  **deferred in September 2026** — do not treat it as a pending task. NLnet
+  requires only "an adequate open license", which MIT already satisfies, and
+  AGPL-family licences conflict with Apple's App Store terms, where Notte is live.
+  Revisit only as a deliberate product decision, never as a funding requirement.
 - **Docs language:** the repository is **English-only**. Keep new docs and
   comments in English.
 
@@ -52,15 +56,17 @@ chrome/     CANONICAL source + master icons. EDIT HERE, then run sync.sh.
               popup.js          the popup logic
               manifest.json     Chrome manifest
               images/           master extension icons (48…512) — synced to the others
+              fonts/            bundled OpenDyslexic woff2 + OFL.txt — synced to the others
 firefox/    Same shared files + Firefox manifest (adds browser_specific_settings.gecko
               id + gecko_android for Firefox-Android; background uses "scripts").
 safari/     Same shared files + Safari manifest, wrapped with Xcode for iOS + macOS.
               app-icons/        the macOS/iOS APP icons (Safari-only; set in Xcode).
 tools/sync.sh   Copies the shared files (content.js, shadow-patch.js, background.js,
-                popup.html, popup.js, images/) from chrome/ into firefox/ and safari/.
+                popup.html, popup.js, images/, fonts/) from chrome/ into firefox/
+                and safari/.
 docs/           engine-v2-design.md (the engine design), store-listings.md.
 README.md · LICENSE · CHANGELOG.md · CONTRIBUTING.md · CODE_OF_CONDUCT.md ·
-SECURITY.md · ACCESSIBILITY.md
+SECURITY.md · ACCESSIBILITY.md · PRIVACY.md
 .github/ISSUE_TEMPLATE/  bug_report.md · feature_request.md · config.yml
 .gitattributes  Normalizes line endings across the Mac + Windows machines.
 ```
@@ -217,7 +223,7 @@ applies **or any tool is on**, on any page:
   reference — the mirror of the dark path). No dark cover, no dark base sheet.
 - **`off`** — nothing injected.
 
-Tools split by how they're applied (see `src/engine/enhance.js`):
+Tools split by how they're applied (all of it in `chrome/content.js` — there is no `src/`):
 - **Contrast** → `remap()` fg path (dark: brighten; light: darken). `lightContrast`
   gates the text pass so we never darken text on an already-dark page.
 - **Warm tint / Brightness / Saturation** → **two** fixed sibling layers, never
@@ -273,12 +279,18 @@ Check which engine is running: in the page console,
 - Bump `version` in the **three** `manifest.json` files each release (keep them
   equal). Also create a matching **git tag** + a **GitHub Release**, and add a
   `CHANGELOG.md` entry.
-- Current version is `1.0.4`. The shipping engine is now the
-  stylesheet-transformation engine — bump appropriately (e.g. `2.0.0`) at the next
-  store release, and note the bigger `host_permissions` in the store review.
-- Chrome Web Store: 5 USD one-time. Firefox AMO: free (we ship unminified source,
-  so no separate source upload is needed). Safari: App Store Connect (needs an
-  Apple Developer account, already available).
+- Current version is `2.0.1` in the three manifests. `2.0.0` is what is live on
+  all three stores; 2.0.1 is built and not yet uploaded. Note the bigger
+  `host_permissions` in the store review at each submission.
+- **All three listings are live and public:**
+  - Chrome Web Store — https://chromewebstore.google.com/detail/lmackbhliaaledjdnkhjnfheideaefmj
+  - Firefox AMO — https://addons.mozilla.org/firefox/addon/notte-accessibility-dark-mode/
+  - App Store ("Notte — Accessibility"; iPhone, iPad, Mac, Vision) —
+    https://apps.apple.com/app/id6789895424
+- Uploading an update: zip the **contents** of `chrome/` or `firefox/` so
+  `manifest.json` sits at the top of the zip — never zip the folder itself. Build
+  the zip outside the repository. Safari ships from Xcode, not a zip. We ship
+  unminified source, so AMO needs no separate source upload.
 - Store-listing metadata (incl. Safari's 30/30/100 title/subtitle/keywords):
   `docs/store-listings.md`.
 
@@ -312,13 +324,13 @@ Check which engine is running: in the page console,
   overlay (warmth/brightness/saturation), or the `#__notte_adjust__` rule sheet
   (everything else). Contrast is a 2-stop switch (OFF↔AAA); on a bright page it
   darkens text toward black (measuring against a light reference), on a dark page it
-  brightens toward white (~12:1). Move the license toward AGPL-3.0.
+  brightens toward white (~12:1).
   - *Still SOON (standalone modules, not page-CSS tools):* Read aloud (TTS), Reading
     ruler, Magnifier (§3a), Large cursor, and the Profile plumbing (Remember /
     Preset / Shortcuts). Build these as their own components.
-  - *Font caveat:* true **OpenDyslexic** needs its font file bundled + an
-    `@font-face`; until then `font: "dyslexic"` falls back to the most legible
-    widely-installed faces (`fontStack()` in `content.js`). **Text size** scales the
+  - *Font — done:* real **OpenDyslexic** is bundled (`chrome/fonts/*.woff2` +
+    `OFL.txt`, an `@font-face` in `content.js`, files declared in
+    `web_accessible_resources`, mirrored by `sync.sh`). **Text size** scales the
     root `font-size`, so rem-based sites benefit most; px-hardcoded sites less.
   - *Known limits:* a settings change re-themes same-origin CSS live, but
     already-fetched **cross-origin** sheets update on the next page load. Also, a new
@@ -328,19 +340,16 @@ Check which engine is running: in the page console,
 
 ## TODO — next session
 
-1. **Real OpenDyslexic.** Bundle the `OpenDyslexic` woff2 in `chrome/` and add an
-   `@font-face` (synced to firefox/safari) so the **Font** tool applies the actual
-   dyslexia face, not just the fallback stack.
-2. **Tune the slider→effect maps.** The 0..100 → effect mappings live in
+1. **Tune the slider→effect maps.** The 0..100 → effect mappings live in
    `loadAndRender` (`content.js`): text scale `1 + pct/100*0.8`, letter `pct/100*0.2em`,
    line-height `1.5 + pct/100*0.7`, brightness/saturation/dimimg = `pct/100`. Try them
    on real sites and adjust ranges to taste.
-3. **Standalone modules.** Build Magnifier (§3a), Reading ruler, Large cursor,
+2. **Standalone modules.** Build Magnifier (§3a), Reading ruler, Large cursor,
    Read-aloud, and the Profile plumbing (Remember / Preset / Shortcuts) — still SOON.
 
-*Housekeeping:* `content.js` still carries the debug timing logs (`nlog`, guarded
-by `var NBG = true`). Set `NBG = false` (or strip the `nlog` block and calls)
-before a store release so the console stays quiet.
+*Housekeeping:* the debug timing logs (`nlog`) are **off** — `var NBG = false` in
+`content.js` since the 2.0.1 release prep (9 September 2026). Turn it back on only
+while debugging locally, and make sure it is `false` again before any store upload.
 
 ## Operating notes
 
